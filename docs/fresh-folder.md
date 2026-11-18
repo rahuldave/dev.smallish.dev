@@ -22,11 +22,11 @@ such as `cargo-llvm-cov` or `pre-commit`.
 | `just` | 1.50.0 | Every recipe |
 | `uv` | 0.12.13 | The installer, Python, the Python tools, and Node for TypeScript |
 | `jlog` | 0.2.0 | The shell of each recipe that the installer writes |
-| `gest` | 0.5.6 | The `g*` skills of the `tasker` role, which is on by default |
+| `gest` | 0.6.0 | The `g*` skills of the `tasker` role, which is on by default. It must be the fork of rahuldave, whose `gest --version` prints `(rahuldave)`. |
 | `jagt` | 0.6.1 | The review targets of the `tasker` role. The installer checks `jagt` only with the `jagt-protocol` skill, at 0.3.0. A record matches the gate from 0.6.1 on. |
-| `rustup` | 1.28.0 | The `rust` profile, and the build of `gest` |
+| `rustup` | 1.28.0 | The `rust` profile only |
 
-jlog and jagt have release binaries for macOS and Linux, on arm64 and x86_64. Each install line
+jlog, jagt and gest have release binaries for macOS and Linux, on arm64 and x86_64. Each install line
 downloads the binary, checks its SHA-256 and puts it in `~/.local/bin`. Put that folder on your PATH.
 The install of jlog also copies its plugins to `~/.local/share/jlog/plugins`. When `uv` is there, it
 makes their environments, so install `uv` first.
@@ -34,15 +34,14 @@ makes their environments, so install `uv` first.
 ```bash
 curl -fsSL https://raw.githubusercontent.com/rahuldave/jlog/main/scripts/install.sh | sh -s -- --tag v0.3.0
 curl -fsSL https://raw.githubusercontent.com/rahuldave/jagt/main/scripts/install.sh | sh -s -- --tag v0.6.3
+curl -fsSL https://raw.githubusercontent.com/rahuldave/gest/v0.6.0/scripts/install.sh | sh -s -- --tag v0.6.0
 ```
 
 To build jlog from source instead, clone <https://github.com/rahuldave/jlog>, run
 `git checkout v0.3.0`, then run `just install` in the clone. To build jagt from source, run
-`cargo install --locked --git https://github.com/rahuldave/jagt --tag v0.6.3 jagt`. A build from source
-needs Rust from <https://rustup.rs/>.
-
-`gest` has no release binary yet. So the `tasker` role needs Rust from <https://rustup.rs/> to run
-`cargo install --locked --git https://github.com/rahuldave/gest gest`.
+`cargo install --locked --git https://github.com/rahuldave/jagt --tag v0.6.3 jagt`. To build gest from
+source, clone <https://github.com/rahuldave/gest>, run `git checkout v0.6.0`, then run
+`cargo install --locked --path .` in the clone. A build from source needs Rust from <https://rustup.rs/>.
 
 No single command sets up a new machine yet. [What works and what is proposed](status.md) tells the proposal.
 
