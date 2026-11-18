@@ -1,0 +1,40 @@
+project:
+  type: website
+  output-dir: _site
+  resources: [CNAME]
+
+website:
+  title: smallish dev
+  favicon: favicon.svg
+  description: "How the smallish dev tools fit together: jnterfaces, the profiles, the g* skills, jlog and the rest"
+  site-url: https://dev.smallish.dev/
+  repo-url: https://github.com/rahuldave/dev.smallish.dev
+  repo-subdir: docs
+  repo-actions: [source, issue]
+  page-navigation: true
+  navbar:
+    left:
+      - href: index.md
+        text: Home
+      - href: system-map.md
+        text: System map
+      - href: fresh-folder.md
+        text: Start
+      - href: update.md
+        text: Update
+      - href: commit.md
+        text: Commits
+      - href: releases.md
+        text: Releases
+      - href: status.md
+        text: Status
+    tools:
+      - icon: github
+        href: https://github.com/rahuldave/dev.smallish.dev
+  page-footer:
+    left: "A [smallish.dev](https://smallish.dev/) project. Each tool has its own site, linked from the home page."
+    right: "Built with [smalldocs](https://docs.smallish.dev/)."
+
+theme: atelier
+toc: true
+code-copy: true

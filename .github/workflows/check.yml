@@ -1,0 +1,29 @@
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: extractions/setup-just@v3
+      - name: Get nossaifd, whose checker prose-check runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/rahuldave/nossaifd.git "$RUNNER_TEMP/nossaifd"
+          git -C "$RUNNER_TEMP/nossaifd" checkout --quiet 7ab9e940bfdfad994008c1b00234572547ceaf9a
+          echo "NOSSAIFD_CHECK=$RUNNER_TEMP/nossaifd/check.py" >> "$GITHUB_ENV"
+      # No agent runs here.
+      - name: Run every check of the repository
+        run: just check
