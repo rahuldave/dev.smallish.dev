@@ -17,16 +17,15 @@ details can change.
 | Commit gate | The gate, the review records, the trailer, `ci-gate` and `just ci` | A record of the checks that a project requires, so that a missing recipe fails and does not become a skip |
 | Release tags | `release-check`, `just release` and the job `release` of CI | No change |
 | jlog | v0.2.0: the run log, `jlog pass`, `jlog run`, and the PATH from the `.jlog` folders | jnterfaces writes `.jlog/bin` and `.jlog/environment.json` for a project |
-| A new machine | Install `git`, `gh`, `just`, `uv`, `jlog`, `gest` and `jagt` by hand. jlog and jagt have release binaries and an install line each. | One command that installs them |
+| A new machine | Install `git`, `gh`, `just`, `uv`, `jlog`, `gest` and `jagt` by hand. jlog, jagt and gest have release binaries and an install line each. | One command that installs them |
 | Tests of a new machine | `just env-lab` of jnterfaces runs `just check` with a clean environment | Fresh Linux and macOS machines, on arm64 and x86_64, that install and commit a real project |
 
 ## A new machine
 
-Today you install each program by hand, as [Start a fresh folder](fresh-folder.md) lists. jlog and jagt
-have release binaries, so they need no Rust. `gest` has no release binary yet, so the `tasker` role still
-needs Rust to build it.
+Today you install each program by hand, as [Start a fresh folder](fresh-folder.md) lists. jlog, jagt and
+gest have release binaries, so only the `rust` profile needs Rust.
 
-The proposal is one command that installs `uv`, `just`, `jlog` and, until `gest` has a release binary, Rust into the home folder, and changes
+The proposal is one command that installs `uv`, `just` and `jlog` into the home folder, and changes
 no shell profile. It then checks each program at its floor. The proposal keeps two jobs apart. The machine
 setup installs the programs, and the installer of jnterfaces sets up each project.
 
