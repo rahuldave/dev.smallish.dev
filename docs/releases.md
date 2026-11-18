@@ -2,9 +2,10 @@
 title: Releases and versions
 ---
 
-jnterfaces, the three profiles, agent_gest_git_skills and each project with the `tasker` role get
-semantic version tags `vX.Y.Z`. CI makes each tag after a push to `main`. Nobody tags by hand, and nobody moves or deletes a
-pushed tag.
+jnterfaces, the three profiles, agent_gest_git_skills, cx, jlog, gest and each project with the
+`tasker` role get semantic version tags `vX.Y.Z`. CI makes each tag after a push to `main`. Nobody tags
+them by hand, and nobody moves or deletes a pushed tag. jagt is the exception, because its maintainer
+pushes each tag by hand.
 
 ## Who makes the tag
 
@@ -15,9 +16,50 @@ The `tasker` role writes the starter workflow `.github/workflows/release.yml`. I
 2. When the check passes, the job `release` runs `just release`. It makes the annotated tag on the
    commit, pushes the tag and checks it with `git ls-remote`.
 
-The job `release` is the only job that can write to the repository. No agent runs in it. A push that
+In the starter workflow, the job `release` is the only job that can write to the repository. No agent runs in it. A push that
 needs no release, such as a change of only the docs, makes no tag. The script is
 `release_tag.py` of the gpa skill of agent_gest_git_skills.
+
+jnterfaces, the three profiles, agent_gest_git_skills, cx, jlog and gest have workflows of their own,
+with the same job `release` after their checks. nossaifd, sklanes and jagt have no job `release`. cx, jlog and gest keep a copy of `release_tag.py`. In jnterfaces and agent_gest_git_skills, CI
+runs only `just check` or steps of it, so a pass of `just check` on your machine is the same check.
+
+## Release binaries
+
+cx, jlog, gest and jagt ship a binary for each platform with each release, so a machine needs no Rust
+to install them. The workflow of cx is the model for the others.
+
+1. **The job `binaries`** runs after the job `release` on each push to `main`. When the commit has no
+   release tag, the job skips its steps and passes. A
+   tag that the job `release` pushes starts no other workflow, so the build runs in the same workflow.
+   A matrix builds four targets:
+
+   | Target | Runner |
+   |---|---|
+   | `aarch64-apple-darwin`, macOS on arm64 | `macos-15` |
+   | `x86_64-apple-darwin`, macOS on x86_64 | `macos-15`, as a cross build |
+   | `x86_64-unknown-linux-musl`, Linux on x86_64 | `ubuntu-24.04` |
+   | `aarch64-unknown-linux-musl`, Linux on arm64 | `ubuntu-24.04-arm` |
+
+   GitHub retired the runner `macos-13`, so the arm64 runner `macos-15` builds the Intel binary. The runner
+   cannot run that binary, so the job checks its architecture. The Linux builds use musl, so each
+   binary is static and runs on any distribution. Each build runs `just dist <target>`, which writes
+   `dist/<bin>-<target>.tar.gz` and its hash, `dist/<bin>-<target>.tar.gz.sha256`.
+2. **The job `publish`** runs after all four builds. It puts the eight files on the GitHub release of
+   the tag. The job `binaries` can only read, so `release` and `publish` are the only jobs that can
+   write.
+
+jagt has no job `release`. A tag that its maintainer pushes starts its workflow `release.yml`, which
+builds the same four targets on `macos-latest` and the Linux runners, without `just dist`, and
+publishes them the same way.
+
+Each of the four repositories has `scripts/install.sh`. It downloads the archive for the machine and its
+`.sha256`, and stops when the hash does not match. It puts the binary in `~/.local/bin`, or the folder
+of `--dir`. It writes the new binary next to the old one, then renames it over the old one in one step.
+A copy over a running binary fails on Linux, and macOS can stop a signed binary that changed in place.
+
+With no `--tag`, `install.sh` installs the latest release.
+[Start a fresh folder](fresh-folder.md#what-the-machine-needs) gives the install line of each tool.
 
 ## How the number is chosen
 
