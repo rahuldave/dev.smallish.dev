@@ -24,27 +24,32 @@ such as `cargo-llvm-cov` or `pre-commit`.
 | `jlog` | 0.2.0 | The shell of each recipe that the installer writes |
 | `gest` | 0.6.0 | The `g*` skills of the `tasker` role, which is on by default. It must be the fork of rahuldave, whose `gest --version` prints `(rahuldave)`. |
 | `jagt` | 0.6.3 | The review packets of the `tasker` role. An older jagt can save the review packet where the commit gate does not read it, in a submodule or a linked worktree. |
+| `cx` | 0.1.0 | The `cx` skill only, which is off by default. Install v0.2.2, the release with binaries. |
 | `rustup` | 1.28.0 | The `rust` profile only |
 
-jlog, jagt and gest have release binaries for macOS and Linux, on arm64 and x86_64. Each install line
+jlog, jagt, gest and cx have release binaries for macOS and Linux, on arm64 and x86_64. Each install line
 downloads the binary, checks its SHA-256 and puts it in `~/.local/bin`. Put that folder on your PATH.
 The install of jlog also copies its plugins to `~/.local/share/jlog/plugins`. When `uv` is there, it
 makes their environments, so install `uv` first.
 
-The lines of jlog and gest take `install.sh` from the release that `--tag` names. The tag v0.6.3 of jagt
+The lines of jlog, gest and cx take `install.sh` from the release that `--tag` names. The tag v0.6.3 of jagt
 has no `install.sh`, so its line takes `install.sh` from the commit of jagt that adds it.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/rahuldave/jlog/v0.3.0/scripts/install.sh | sh -s -- --tag v0.3.0
 curl -fsSL https://raw.githubusercontent.com/rahuldave/jagt/7ea80a99492fe5eed5d7fa9b9a4e1ba08599463a/scripts/install.sh | sh -s -- --tag v0.6.3
 curl -fsSL https://raw.githubusercontent.com/rahuldave/gest/v0.6.0/scripts/install.sh | sh -s -- --tag v0.6.0
+curl -fsSL https://raw.githubusercontent.com/rahuldave/cx/v0.2.2/scripts/install.sh | sh -s -- --tag v0.2.2
 ```
+
+Install cx only when you turn on the `cx` skill.
 
 To build jlog from source instead, clone <https://github.com/rahuldave/jlog>, run
 `git checkout v0.3.0`, then run `just install` in the clone. To build jagt from source, run
 `cargo install --locked --git https://github.com/rahuldave/jagt --tag v0.6.3 jagt`. To build gest from
 source, clone <https://github.com/rahuldave/gest>, run `git checkout v0.6.0`, then run
-`cargo install --locked --path .` in the clone. A build from source needs Rust from <https://rustup.rs/>.
+`cargo install --locked --path .` in the clone. To build cx from source, run
+`cargo install --locked --git https://github.com/rahuldave/cx --tag v0.2.2 cx`. A build from source needs Rust from <https://rustup.rs/>.
 
 No single command sets up a new machine yet. [What works and what is proposed](status.md) tells the proposal.
 
@@ -76,6 +81,10 @@ flowchart TD
 | Go or another language | `tasker prose` | Recipes for `lint` and `test` that end with `jlog step NAME` |
 | Text, notes or a book | `prose` | The pages. Add `docs` for a smalldocs site. |
 | Spreadsheets or data | `prose` | A recipe that checks the data, such as its columns or totals |
+
+The `docs` role writes a smalldocs site in `docs/`. The theme of a new site is Atelier, with a light
+mode and a dark mode. A site with its own config and another theme keeps that theme, and gets no theme
+files.
 
 Add `--defaults` to take the default roles and answers with no questions. A command that names only
 roles turns on those roles and asks about no other role. No profile exists for Go, so `--profile go` fails.

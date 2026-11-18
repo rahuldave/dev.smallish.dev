@@ -64,5 +64,5 @@ The diagram reads from left to right:
 | [Start a fresh folder](fresh-folder.md) | The programs of the machine, the setup for each kind of project, and the first `just check` |
 | [Update a project](update.md) | `just install --update`, `--check`, the version floors and the starter files |
 | [A commit's path](commit.md) | The steps, the reviews, the pass of jlog, the gate and CI |
-| [Releases and versions](releases.md) | The tags that CI makes, `<profile>::version` and the floors |
+| [Releases and versions](releases.md) | The tags that CI makes, the release binaries, `<profile>::version` and the floors |
 | [What works and what is proposed](status.md) | Each part of the stack, with its state today |

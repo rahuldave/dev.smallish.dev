@@ -13,17 +13,19 @@ details can change.
 | Project setup | The installer of jnterfaces: profiles, roles, tools, the record and `just install` | A lock of the exact package commits of a project |
 | Languages | Profiles for Python, TypeScript and Rust. Any other language works with recipes of its own. | A profile for another language, such as Go, when several projects need it |
 | Version floors | The key `programs` of the record, and the step `tools-check` | None. The floors take the place of an earlier proposal, a lock file of external tool versions. |
-| Docs | The `docs` role: a smalldocs site, `docs-check`, and `docs-publish` to the branch `gh-pages` | A list of the docs that a project must have, which `just update-docs` checks |
+| Docs | The `docs` role: a smalldocs site with the theme Atelier, `docs-check`, and `docs-publish` to the branch `gh-pages` | A list of the docs that a project must have, which `just update-docs` checks |
 | Commit gate | The gate, the review records, the trailer, `ci-gate` and `just ci` | A record of the checks that a project requires, so that a missing recipe fails and does not become a skip |
-| Release tags | `release-check`, `just release` and the job `release` of CI | No change |
-| jlog | v0.2.0: the run log, `jlog pass`, `jlog run`, and the PATH from the `.jlog` folders | jnterfaces writes `.jlog/bin` and `.jlog/environment.json` for a project |
-| A new machine | Install `git`, `gh`, `just`, `uv`, `jlog`, `gest` and `jagt` by hand. jlog, jagt and gest have release binaries and an install line each. | One command that installs them |
+| Release tags | `release-check`, `just release` and the job `release` of CI, in each project of the `tasker` role and each package except jagt, nossaifd and sklanes. Release binaries of cx, jlog, gest and jagt for four targets. | No change |
+| jlog | v0.3.0: the run log, `jlog pass`, `jlog run`, the PATH from the `.jlog` folders, and release binaries. The floor stays at 0.2.0. | jnterfaces writes `.jlog/bin` and `.jlog/environment.json` for a project |
+| A new machine | Install `git`, `gh`, `just`, `uv`, `jlog`, `gest` and `jagt` by hand, and `cx` for the `cx` skill. jlog, jagt, gest and cx have release binaries and an install line each. CI downloads the binaries that it needs. | One command that installs them |
 | Tests of a new machine | `just env-lab` of jnterfaces runs `just check` with a clean environment | Fresh Linux and macOS machines, on arm64 and x86_64, that install and commit a real project |
 
 ## A new machine
 
-Today you install each program by hand, as [Start a fresh folder](fresh-folder.md) lists. jlog, jagt and
-gest have release binaries, so only the `rust` profile needs Rust.
+Today you install each program by hand, as [Start a fresh folder](fresh-folder.md) lists. jlog, jagt,
+gest and cx have release binaries, so only the `rust` profile needs Rust. The CI of jnterfaces, of the profiles,
+of agent_gest_git_skills and of the starter workflows downloads the binaries of jlog and jagt that it
+needs, and builds neither tool.
 
 The proposal is one command that installs `uv`, `just` and `jlog` into the home folder, and changes
 no shell profile. It then checks each program at its floor. The proposal keeps two jobs apart. The machine
@@ -32,11 +34,11 @@ setup installs the programs, and the installer of jnterfaces sets up each projec
 ## Programs and their paths
 
 A check of a program reads only. The installer sets `RUSTUP_AUTO_INSTALL=0` and
-`UV_PYTHON_DOWNLOADS=never` for each check. With jlog 0.2.0, the installer runs each check through
+`UV_PYTHON_DOWNLOADS=never` for each check. With jlog 0.2.0 or later, the installer runs each check through
 `jlog run`, so a check sees the same PATH as a recipe line.
 
-jlog 0.2.0 reads `.jlog/bin` and `.jlog/environment.json` in the folders above the current folder, and
-puts them first on the PATH. It never installs a program. No tool writes these files yet, so a project
+jlog 0.2.0 and later read `.jlog/bin` and `.jlog/environment.json` in the folders above the current folder, and
+put them first on the PATH. jlog never installs a program. No tool writes these files yet, so a project
 that needs a program of its own puts it there by hand.
 
 ## The commit gate
