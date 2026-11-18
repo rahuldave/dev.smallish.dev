@@ -50,10 +50,6 @@ The gate works today, as [A commit's path](commit.md) tells. These gaps stay ope
   `ci-gate` fails on the pull request.
 - **The trailer is a claim.** An agent could write one by hand. The review of the pull request is the
   check of the trailer.
-- **jagt has no floor in the `tasker` role.** The record of a review needs `jagt result lint`, but
-  the role does not check `jagt`. Only the `jagt-protocol` skill does, at 0.3.0. A record from a jagt
-  older than 0.6.1 can fail to match the tree of the commit. So a default install shows a missing or
-  old jagt only when `just review` fails.
 
 ## Tests of the whole stack
 

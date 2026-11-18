@@ -30,7 +30,7 @@ highest floor of each program counts. It saves each floor in the key `programs` 
 | Owner | Floors |
 |---|---|
 | jnterfaces, in each project | `jlog` >=0.2.0, `just` >=1.50.0, `uv` >=0.12.13, `git` >=2.40, `gh` >=2.40 |
-| the `tasker` role | `gest` >=0.6.0, and `gest --version` must print `(rahuldave)` |
+| the `tasker` role | `gest` >=0.6.0, whose `gest --version` must print `(rahuldave)`, and `jagt` >=0.6.3 |
 | the `rust` profile | `rustup` >=1.28.0, `cargo-llvm-cov` >=0.9.1, and more for its tools |
 | the `jagt-protocol` skill | `jagt` >=0.3.0 |
 | the `cx` skill | `cx` >=0.1.0 |
