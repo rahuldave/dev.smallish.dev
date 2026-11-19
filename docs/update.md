@@ -11,7 +11,7 @@ branch, and commit it as a change of its own.
 | Command | What it does |
 |---|---|
 | `just install` | Installs the saved set again, from the clones as they are now |
-| `just install --update` | Runs `git pull --ff-only` in the jnterfaces clone and in each clone of a package that the run installs, then installs |
+| `just install --update` | Moves the jnterfaces clone and each clone of a package that the run uses to its latest release, then installs |
 | `just install --check` | Compares the record with the shared files and checks the steps. It changes nothing. |
 | `just install --dry-run` | Checks everything and writes nothing in the project |
 | `just install --clean` | Installs the last commit of each clone, without changes that are not committed |
@@ -23,8 +23,35 @@ stays, the installer keeps the line `docs/_extensions/** -whitespace` in `.gitat
 `git diff --check` accepts the line ends of the theme. Delete the theme, and the next run takes out the
 line.
 
-`--update` skips a package clone that has no upstream branch, and prints "Not updated". After an update, run
-`just install --check`, stage the changes and run `just check`.
+Since jnterfaces v0.4.1, the latest release of a package is the highest release tag `vX.Y.Z` on the
+default branch of its remote. A commit after that tag is not released, so `--update` does not install it.
+A clone with commits after the latest release moves back to the release, when the remote branch has
+each of these commits. An older jnterfaces pulled each clone to its newest commit, so the first update
+with v0.4.1 can move a clone back. A package with no release tag gets the newest commit of the remote
+branch, and the run says so.
+
+The installer never discards a local change. These clones stop the run, and the message names the clone:
+
+- A clone with changes to tracked files that are not committed.
+- A clone with an untracked or ignored file where the release adds a file or a folder.
+- A clone that cannot fast-forward. Its branch and the remote branch each have commits that the other
+  does not have.
+- A clone whose remote the installer cannot read, for example with no network.
+
+These clones stay as they are, and the run prints "Not updated":
+
+- A clone on a branch that is not the default branch of its remote, or on a branch with no upstream
+  branch.
+- A clone with its own commits on top of the remote branch.
+- A clone that does not know the default branch of its remote. The message gives the command that sets
+  it.
+- A clone that you checked out at a tag or a commit. So, to pin a package, check out that tag in its
+  clone, for example `git -C CLONE checkout v0.4.3`.
+
+The jnterfaces clone moves first, then the profile clones, then the role clones. A clone that stops the
+run does not undo the clones that moved before it, but the installer writes nothing in the project.
+[How an install works](https://rahuldave.com/jnterfaces/stack-guide.html#how-an-install-works) gives
+all the rules. After an update, run `just install --check`, stage the changes and run `just check`.
 
 ## Version floors
 
@@ -72,4 +99,6 @@ or else the output of `git describe`, such as `v0.1.0-3-g1a2b3c4`.
 
 A package can need a version of another package, with the key `requires` of its `skill-package.json`,
 for example `{"jnterfaces": ">=0.1.0"}`. Before it writes anything, the installer stops when a clone
-has no tag or is below the floor. Then run `just install --update` to get the newer clone.
+has no tag or is below the floor. Then run `just install --update` to move the clone to its latest
+release. A clone that `--update` does not move, such as a clone at a tag, needs a newer tag checked out
+by hand.

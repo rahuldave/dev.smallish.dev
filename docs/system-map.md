@@ -42,7 +42,7 @@ The installer writes these files, and the tools read them:
 | File | Who writes it | Who reads it |
 |---|---|---|
 | `Justfile` | The installer once, then you | `just` |
-| `.agents/install.just` | jnterfaces | The `Justfile`, which imports it. It gives `just install`. |
+| `.agents/install.just` | jnterfaces | The `Justfile`, which imports it. It gives `just install`, `just uninstall` and `just env-lab`. |
 | `.agents/just/` | The installer, at each run | `just`. Commit it, because a clone without it has no recipes of the profiles. |
 | `.agents/stack.json` | The installer | `just install`, `tools-check`, `jlog pass` and the commit gate. The installer writes its list `ci` into the recipe `just ci`. |
 | `.agents/<package>-install.json`, or the record name of the catalog, such as `gest-git-install.json` | The installer | The installer, which keeps the commit, the version and the hash of each file it copied |
