@@ -9,6 +9,13 @@ has no `just install` yet. After that, `just install` does each change.
 [Start a Python, TypeScript or Rust project](https://rahuldave.com/jnterfaces/new-project.html) gives
 each step with examples. This page gives the order and the choices.
 
+## A project that already has code
+
+A project with code, a `Justfile` or an `AGENTS.md` of its own does not start in a fresh folder.
+[Bring an existing project in](https://rahuldave.com/jnterfaces/existing-project.html) gives each step.
+It also tells how to fix a recipe of yours whose name clashes with a recipe of the installer, such as
+`install`.
+
 ## What the machine needs
 
 Install these programs once on each machine. The installer stops and writes nothing when a program of
