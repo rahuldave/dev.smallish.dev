@@ -10,20 +10,36 @@ stops a commit that has no proof of its checks.
 Each tool has its own repository and its own site. This site tells how the tools fit together, and it
 links to the site of each tool for the details.
 
-## The tools
+## How the tools fit together
 
-- **jnterfaces** is a package of agent skills for the commands of a project, with an installer in Python.
-- **agent_gest_git_skills** is a package of agent skills, the `g*` skills, with Git hooks and tools in Python
-  and shell.
-- **jlog** is a Rust command-line program, the run logger of `just`.
-- **gest** is a Rust command-line task tracker for people and agents.
-- **jagt** is a Rust command-line program for the task and result packets of an agent. A packet is a block of
-  text in a fixed format.
-- **cx** is a Rust command-line program for conditional execution of one recipe line.
-- **nossaifd** is a writing guide, `GUIDE.md`, and a Python checker for it, `check.py`.
-- **smalldocs** is a Python static-site generator for Markdown pages and notebooks.
-- **The profiles**, jnprofile-python, jnprofile-typescript and jnprofile-rust, are packages of agent skills,
-  one for each language, with the recipes of its tools.
+Every project has the same common tasks, such as installing the software, running the tests, linting the
+code, building the docs and making a release. In a project set up by these tools, each task is a recipe of `just`, such as
+`just install` or `just check`. So a person and an agent type the same commands in every project, in any
+language. The tools depend on four programs of the machine, which are `just`, `git`, `gh`, the GitHub
+command-line program, and `uv`, which runs the Python tools.
+
+**jnterfaces** gives a project its base recipes, the ones that every project has. A profile, such as
+jnprofile-python, jnprofile-typescript or jnprofile-rust, adds the recipes of one language. `just install` copies
+the recipes in, and `just install --update` brings them up to date.
+
+**jlog** runs each line of a recipe and logs it, with the `just` command, the line and its exit code.
+So the log shows exactly what a recipe did. The commit gate reads this log to see that the checks ran and passed.
+
+**cx** helps `just` with files. It skips a recipe line when the files it reads and writes, and the
+command, have not changed since the last run, so a slow step runs only when it has to.
+
+Some recipes need an agent rather than a program, such as a code review or a check of the docs. Such a
+recipe is an agentic recipe. **jagt** writes the task for the agent as a packet, a block of text with a fixed
+structure. The agent answers in a packet of the same kind, and jagt checks that answer before the
+result counts.
+
+**agent_gest_git_skills** holds the skills that an agent follows to develop in git, from a task to a
+reviewed commit and a pull request. It keeps each small task of the agent in **gest**, an issue tracker
+for agentic micro-tasks. The skills sync the top-level tasks with GitHub issues, through `gh`, so people
+see the work on GitHub.
+
+**nossaifd** is the writing guide of the docs, and its checker, `check.py`. **smalldocs** builds the docs
+site of each tool, and this site too.
 
 ## Which tool calls which
 
