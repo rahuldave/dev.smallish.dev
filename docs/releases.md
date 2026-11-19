@@ -4,8 +4,7 @@ title: Releases and versions
 
 jnterfaces, the three profiles, agent_gest_git_skills, cx, jlog, gest and each project with the
 `tasker` role get semantic version tags `vX.Y.Z`. CI makes each tag after a push to `main`. Nobody tags
-them by hand, and nobody moves or deletes a pushed tag. jagt is the exception, because its maintainer
-pushes each tag by hand.
+them by hand, and nobody moves or deletes a pushed tag. jagt also gets its tags from CI, since v0.6.4.
 
 ## Who makes the tag
 
@@ -20,8 +19,8 @@ In the starter workflow, the job `release` is the only job that can write to the
 needs no release, such as a change of only the docs, makes no tag. The script is
 `release_tag.py` of the gpa skill of agent_gest_git_skills.
 
-jnterfaces, the three profiles, agent_gest_git_skills, cx, jlog and gest have workflows of their own,
-with the same job `release` after their checks. nossaifd, sklanes and jagt have no job `release`. cx, jlog and gest keep a copy of `release_tag.py`. In jnterfaces and agent_gest_git_skills, CI
+jnterfaces, the three profiles, agent_gest_git_skills, cx, jlog, gest and jagt have workflows of their own,
+with the same job `release` after their checks. nossaifd and sklanes have no job `release`. jlog and gest keep a copy of `release_tag.py` in `scripts/`. cx and jagt use the copy that the gpa skill installs. In jnterfaces and agent_gest_git_skills, CI
 runs only `just check` or steps of it, so a pass of `just check` on your machine is the same check.
 
 ## Release binaries
@@ -49,9 +48,7 @@ to install them. The workflow of cx is the model for the others.
    the tag. The job `binaries` can only read, so `release` and `publish` are the only jobs that can
    write.
 
-jagt has no job `release`. A tag that its maintainer pushes starts its workflow `release.yml`, which
-builds the same four targets on `macos-latest` and the Linux runners, without `just dist`, and
-publishes them the same way.
+jagt has the same jobs `release`, `binaries` and `publish`, in its workflow `ci.yml`.
 
 Each of the four repositories has `scripts/install.sh`. It downloads the archive for the machine and its
 `.sha256`, and stops when the hash does not match. It puts the binary in `~/.local/bin`, or the folder
@@ -97,6 +94,11 @@ commit must also raise it.
 `release-check` is the second step of `just check`. It runs the script with `--check` and prints the
 next tag. It needs no network. So a commit that needs a higher manifest version fails on your machine,
 before the merge. In a shallow checkout or with no tag yet, it says so and passes.
+
+`just check` runs before you write the commit message, so it cannot read the type of the commit. Since
+agent_gest_git_skills v0.3.5, the commit-msg hook runs `just release-check` again with the message. It
+stops a commit when its type, such as `feat:`, asks for a release, the manifest has a version, and that
+version is not raised.
 
 `just release --dry-run` prints the tag and changes nothing.
 
