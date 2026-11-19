@@ -3,8 +3,9 @@ title: A commit's path
 ---
 
 In a project with the `tasker` role, a commit goes through a gate. The gate is a script of
-agent_gest_git_skills that the Git hooks run. It does not run the checks or the reviews. It reads the
-proof that they ran on the same tree, and it stops the commit when the proof is missing.
+agent_gest_git_skills that the Git hooks run. It does not run `just check` or the reviews. It reads the
+proof that they ran on the same tree, and it stops the commit when the proof is missing. At the
+commit-msg hook, it runs one check, `just release-check`, on the message of the commit.
 
 ## The order of the work
 
@@ -26,7 +27,8 @@ proof that they ran on the same tree, and it stops the commit when the proof is 
    commit, so a fix after a review needs the review again.
 4. **Run `just check`.** jlog logs each line and each step. The last line, `jlog pass`, writes a pass
    for the tree.
-5. **Commit.** The Git hooks run the gate, and the commit-msg hook adds the trailer.
+5. **Commit.** The Git hooks run the gate. The commit-msg hook runs `just release-check` on the message,
+   then adds the trailer.
 
 The file `.agents/targets/required.txt` of the parent commit can change which targets a path needs.
 `just review` stays required for every commit by an agent. A commit by a person needs only the pass
@@ -49,7 +51,9 @@ run IDs.
 
 ## What the gate checks
 
-The hooks come from the pre-commit framework, which the `tasker` role installs. The gate,
+The hooks come from the pre-commit framework. `just install` runs `pre-commit install` to put them in
+the clone. Since jnterfaces v0.3.0 and agent_gest_git_skills v0.4.0, `tools-check` fails in a clone that
+has no hooks, so run `just install` in each new clone. When `CI` is set, `tools-check` does not check the hooks. The gate,
 `commit_gate.py`, runs before a commit and before a merge commit. It checks these facts:
 
 - The steps of the record and the required targets exist as recipes.
@@ -57,7 +61,10 @@ The hooks come from the pre-commit framework, which the `tasker` role installs. 
 - The run log has a pass of `just check` for that tree.
 - For a commit by an agent, the records of the required targets form a chain that ends at that tree.
 
-The commit-msg hook then adds the trailer `Commit-Gate: patch:<patch-id>`, or
+The commit-msg hook then runs `just release-check` with the message of the commit. It stops a commit
+whose type asks for a release when the manifest has a version and that version is not raised. It skips
+this check for a merge or an amend of a merge, during a rebase, and when the Justfile has no recipe
+`release-check`. Then it adds the trailer `Commit-Gate: patch:<patch-id>`, or
 `Commit-Gate: tree:<tree>` for a merge. `git commit -n` skips the
 hooks, so a commit that went around the gate has no trailer.
 [The commit gates](https://rahuldave.com/agent_gest_git_skills/specs/commit-gates.html) tell each rule.

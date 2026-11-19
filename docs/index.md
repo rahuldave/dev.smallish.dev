@@ -35,8 +35,8 @@ The diagram reads from left to right:
 - **just** runs each recipe, and **jlog** runs each line of it and logs the line.
 - **An agentic recipe**, such as `just review`, prints a task for a fresh agent. The agent returns a
   result, and jagt checks the result before the record is saved.
-- **The commit gate** reads the run log, and for a commit by an agent the records. It runs no check
-  itself.
+- **The commit gate** reads the run log, and for a commit by an agent the records. It does not run
+  `just check`. At the commit-msg hook, it runs one check, `just release-check`, on the message.
 
 [The system map](system-map.md) gives the terms and the files that hold each choice.
 

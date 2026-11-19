@@ -45,6 +45,10 @@ of `just check`, runs the check of each program and compares the version with it
 and downloads nothing. So after an update raises a floor, `just check` fails on each machine with an
 older program, and the message names the floor, the version found and the owner.
 
+Since jnterfaces v0.3.0 and agent_gest_git_skills v0.4.0, `tools-check` also checks the Git hooks of the
+`tasker` role. A new clone of a project has no hooks, so `just check` fails there. Run `just install`, which runs `pre-commit install`.
+When `CI` is set, `tools-check` does not check the hooks.
+
 [The programs of a profile](https://github.com/rahuldave/jnterfaces/blob/main/docs/stack-files.md#the-programs-of-a-profile)
 gives the keys of a program and the rules of a check.
 
