@@ -10,6 +10,21 @@ stops a commit that has no proof of its checks.
 Each tool has its own repository and its own site. This site tells how the tools fit together, and it
 links to the site of each tool for the details.
 
+## The tools
+
+- **jnterfaces** is a package of agent skills for the commands of a project, with an installer in Python.
+- **agent_gest_git_skills** is a package of agent skills, the `g*` skills, with Git hooks and tools in Python
+  and shell.
+- **jlog** is a Rust command-line program, the run logger of `just`.
+- **gest** is a Rust command-line task tracker for people and agents.
+- **jagt** is a Rust command-line program for the task and result packets of an agent. A packet is a block of
+  text in a fixed format.
+- **cx** is a Rust command-line program for conditional execution of one recipe line.
+- **nossaifd** is a writing guide, `GUIDE.md`, and a Python checker for it, `check.py`.
+- **smalldocs** is a Python static-site generator for Markdown pages and notebooks.
+- **The profiles**, jnprofile-python, jnprofile-typescript and jnprofile-rust, are packages of agent skills,
+  one for each language, with the recipes of its tools.
+
 ## Which tool calls which
 
 ```{mermaid}
@@ -40,14 +55,11 @@ The diagram reads from left to right:
 
 [The system map](system-map.md) gives the terms and the files that hold each choice.
 
-## The tools
+## What each tool does
 
 | Tool | What it does | Site |
 |---|---|---|
 | jnterfaces | The installer, `just install`, the roles, the profiles and the steps of `just check` | [rahuldave.com/jnterfaces](https://rahuldave.com/jnterfaces/) |
-| jnprofile-python | The Python profile: ruff, ty and pytest, with uv | [rahuldave.com/jnprofile-python](https://rahuldave.com/jnprofile-python/) |
-| jnprofile-typescript | The TypeScript profile: Biome, tsc and the Node test runner, with Node through uv | [rahuldave.com/jnprofile-typescript](https://rahuldave.com/jnprofile-typescript/) |
-| jnprofile-rust | The Rust profile: rustfmt, clippy, cargo-llvm-cov and the doc checks | [rahuldave.com/jnprofile-rust](https://rahuldave.com/jnprofile-rust/) |
 | agent_gest_git_skills | The `g*` skills, the commit gates, the review targets and the release tags | [rahuldave.com/agent_gest_git_skills](https://rahuldave.com/agent_gest_git_skills/) |
 | jlog | The shell of each recipe, the run log, `jlog run` and the pass of `just check` | [rahuldave.com/jlog](https://rahuldave.com/jlog/) |
 | gest | The task tracker of the `g*` skills | [rahuldave.com/gest](https://rahuldave.com/gest/) |
@@ -55,6 +67,9 @@ The diagram reads from left to right:
 | cx | Recipe lines that run again only when their files change | [rahuldave.com/cx](https://rahuldave.com/cx/) |
 | nossaifd | The writing guide and its checker, `check.py` | [rahuldave.com/nossaifd](https://rahuldave.com/nossaifd/) |
 | smalldocs | The docs generator of each site, this site too | [docs.smallish.dev](https://docs.smallish.dev/) |
+| jnprofile-python | The Python profile: ruff, ty and pytest, with uv | [rahuldave.com/jnprofile-python](https://rahuldave.com/jnprofile-python/) |
+| jnprofile-typescript | The TypeScript profile: Biome, tsc and the Node test runner, with Node through uv | [rahuldave.com/jnprofile-typescript](https://rahuldave.com/jnprofile-typescript/) |
+| jnprofile-rust | The Rust profile: rustfmt, clippy, cargo-llvm-cov and the doc checks | [rahuldave.com/jnprofile-rust](https://rahuldave.com/jnprofile-rust/) |
 
 ## The pages
 
