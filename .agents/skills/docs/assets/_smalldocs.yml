@@ -1,0 +1,16 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: Docs
+  page-navigation: true
+  navbar:
+    left:
+      - href: index.md
+        text: Home
+
+# Atelier, a theme with a light and a dark mode. The role writes it into _extensions/atelier.
+theme: atelier
+toc: true
+code-copy: true

@@ -1,0 +1,4 @@
+# begin lines of jnterfaces, the installer, from jnterfaces at 9e1f22d.
+# Last written to .worktreedisposable by `install_stack.py --update tasker prose docs --target . --defaults --answer docs-publish=no`. The record is parts.".worktreedisposable" in .agents/stack.json.
+.agents/log/
+# end lines of jnterfaces. They stay while the project keeps .agents/stack.json.

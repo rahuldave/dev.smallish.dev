@@ -1,23 +1,18 @@
-# The recipes of the site. CI runs just check, in .github/workflows/check.yml, and no other check.
-smalldocs := "uvx --quiet smalldocs@0.5.12"
-# The checker of nossaifd. CI sets NOSSAIFD_CHECK to its clone of nossaifd.
-nossaifd_check := env("NOSSAIFD_CHECK", home_directory() / "Projects/nossaifd/check.py")
+# dev.smallish.dev: every task is a recipe here. `just` lists them.
+# Started by jnterfaces. A recipe below overrides a recipe of just install with the same name.
+# just install adds the recipes of each tool: just install lint adds a tool, and just uninstall lint takes it out.
+import? '.agents/install.just'
 
-# Every check of the repository, in this order
-check: docs-check prose-check
+# One run ID for this just call and each just call inside it, for the run log of jlog. Keep it in this file only
+export JLOG_RUN := env("JLOG_RUN", uuid())
 
-# Build the site in a temporary folder, and fail on a broken link or on Markdown that smalldocs does not read
-docs-check:
-  {{smalldocs}} check docs
+# Each word after a recipe's name reaches its commands whole, as "$1", "$2" and so on; "$@" is all of them
+set positional-arguments
 
-# The checker of nossaifd on each Markdown page of the repository. A hard note fails it
-prose-check:
-  git ls-files -z '*.md' | xargs -0 uv run --no-project --quiet python {{quote(nossaifd_check)}}
+# A recipe of this file with the name of a recipe of just install, such as lint, takes its place. A step of just
+# check, such as lint, ends with the line: jlog step lint
+set allow-duplicate-recipes
 
-# Preview the site, and build it again on each change
-docs:
-  {{smalldocs}} preview docs
-
-# Build the site into docs/_site, in strict mode
-docs-build:
-  {{smalldocs}} render docs --strict
+[private]
+default:
+    @just --list --unsorted --list-submodules
