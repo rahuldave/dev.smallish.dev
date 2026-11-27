@@ -3,23 +3,24 @@ title: What works and what is proposed
 ---
 
 Some parts of the stack work today, and some are proposals. This page gives the state of each part on
-2026-11-19, from the code of each repository on that day. A proposal here has no code yet, and its
+2026-11-27, from the code of each repository on that day. A proposal here has no code yet, and its
 details can change.
 
 On that day, these were the latest tags:
 
 | Package | Tag |
 |---|---|
-| jnterfaces | v0.3.2 |
-| agent_gest_git_skills | v0.4.2 |
-| jnprofile-python | v0.2.3 |
-| jnprofile-typescript | v0.2.3 |
-| jnprofile-rust | v0.2.2 |
-| jlog | v0.3.0 |
+| jnterfaces | v0.5.2 |
+| agent_gest_git_skills | v0.11.0 |
+| jnprofile-python | v0.3.0 |
+| jnprofile-typescript | v0.3.0 |
+| jnprofile-rust | v0.8.0 |
+| jlog | v0.5.0 |
 | gest | v0.6.0 |
 | jagt | v0.6.4 |
 | cx | v0.2.3 |
-| smalldocs | v0.5.12 |
+| nossaifd | v0.1.1 |
+| smalldocs | v0.5.13 |
 
 ## The state of each part
 
@@ -31,7 +32,7 @@ On that day, these were the latest tags:
 | Docs | The `docs` role: a smalldocs site with the theme Atelier, `docs-check`, and `docs-publish` to the branch `gh-pages` | A list of the docs that a project must have, which `just update-docs` checks |
 | Commit gate | The gate, the review records, the trailer, `ci-gate` and `just ci` | A record of the checks that a project requires, so that a missing recipe fails and does not become a skip |
 | Release tags | `release-check`, `just release` and the job `release` of CI, in each project of the `tasker` role and each package except nossaifd and sklanes. Release binaries of cx, jlog, gest and jagt for four targets. | No change |
-| jlog | v0.3.0: the run log, `jlog pass`, `jlog run`, the PATH from the `.jlog` folders, and release binaries. The floor stays at 0.2.0. | jnterfaces writes `.jlog/bin` and `.jlog/environment.json` for a project |
+| jlog | v0.5.0: the run log, `jlog pass`, `jlog run`, the PATH from the `.jlog` folders, and release binaries. The floor stays at 0.2.0. | jnterfaces writes `.jlog/bin` and `.jlog/environment.json` for a project |
 | A new machine | Install `git`, `gh`, `just`, `uv`, `jlog`, `gest` and `jagt` by hand, and `cx` for the `cx` skill. jlog, jagt, gest and cx have release binaries and an install line each. CI downloads the binaries that it needs. | One command that installs them |
 | Tests of a new machine | `just env-lab` of jnterfaces runs `just check` with a clean environment | Fresh Linux and macOS machines, on arm64 and x86_64, that install and commit a real project |
 

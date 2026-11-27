@@ -36,14 +36,15 @@ such as `cargo-llvm-cov` or `pre-commit`.
 
 jlog, jagt, gest and cx have release binaries for macOS and Linux, on arm64 and x86_64. Each install line
 downloads the binary, checks its SHA-256 and puts it in `~/.local/bin`. Put that folder on your PATH.
-The install of jlog also copies its plugins to `~/.local/share/jlog/plugins`. When `uv` is there, it
-makes their environments, so install `uv` first.
 
-Each line takes `install.sh` from the release that `--tag` names. The line of jagt installs v0.6.4, and
-the floor of jagt stays at 0.6.3.
+Install `uv` before `jlog`. The install script of `jlog` copies its plugins to `~/.local/share/jlog/plugins`
+and builds their environments with `uv` when `uv` is on your PATH.
+
+Each line takes `install.sh` from the release that `--tag` names. The line of jlog installs v0.5.0, while
+its floor stays at 0.2.0. The line of jagt installs v0.6.4, while its floor stays at 0.6.3.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rahuldave/jlog/v0.3.0/scripts/install.sh | sh -s -- --tag v0.3.0
+curl -fsSL https://raw.githubusercontent.com/rahuldave/jlog/v0.5.0/scripts/install.sh | sh -s -- --tag v0.5.0
 curl -fsSL https://raw.githubusercontent.com/rahuldave/jagt/v0.6.4/scripts/install.sh | sh -s -- --tag v0.6.4
 curl -fsSL https://raw.githubusercontent.com/rahuldave/gest/v0.6.0/scripts/install.sh | sh -s -- --tag v0.6.0
 curl -fsSL https://raw.githubusercontent.com/rahuldave/cx/v0.2.3/scripts/install.sh | sh -s -- --tag v0.2.3
@@ -52,11 +53,21 @@ curl -fsSL https://raw.githubusercontent.com/rahuldave/cx/v0.2.3/scripts/install
 Install cx only when you turn on the `cx` skill.
 
 To build jlog from source instead, clone <https://github.com/rahuldave/jlog>, run
-`git checkout v0.3.0`, then run `just install` in the clone. To build jagt from source, run
+`git checkout v0.5.0`, then run `just install` in the clone. To build jagt from source, run
 `cargo install --locked --git https://github.com/rahuldave/jagt --tag v0.6.4 jagt`. To build gest from
 source, clone <https://github.com/rahuldave/gest>, run `git checkout v0.6.0`, then run
 `cargo install --locked --path .` in the clone. To build cx from source, run
 `cargo install --locked --git https://github.com/rahuldave/cx --tag v0.2.3 cx`. A build from source needs Rust from <https://rustup.rs/>.
+
+Finish machine setup on Linux and macOS:
+
+- **GitHub access.** Run `gh auth login` so `gh` can read repositories and open pull requests. If your
+  repositories use SSH remotes, add an SSH key to GitHub as well.
+- **Rust on Linux distributions with a system package.** Distributions such as Arch Linux and Omarchy ship
+  a system `rust` package (`extra/rust`) with standalone `/usr/bin/cargo` and `/usr/bin/rustc` binaries.
+  That package shadows a `rustup.rs` install in `~/.cargo/bin` and ignores `rust-toolchain.toml`. Replace
+  it with `sudo pacman -S rustup` and then run `rustup default stable`, so `/usr/bin/cargo` and
+  `/usr/bin/rustc` become `rustup` proxies.
 
 No single command sets up a new machine yet. [What works and what is proposed](status.md) tells the proposal.
 
@@ -98,7 +109,8 @@ roles turns on those roles and asks about no other role. No profile exists for G
 
 ## Install
 
-Clone jnterfaces once into the folder of package clones. The default folder is
+During machine setup, clone only jnterfaces into the folder of package clones. Do not clone
+`agent_gest_git_skills`, `nossaifd` or the `jnprofile-*` repositories by hand. The default folder is
 `~/.local/share/skill-packages`. Set `SKILL_PACKAGES_DIR` in your shell profile to use another folder.
 
 ```bash
@@ -112,7 +124,8 @@ mkdir app && cd app && git init
 uv run "${SKILL_PACKAGES_DIR:-$HOME/.local/share/skill-packages}/jnterfaces/scripts/install_stack.py" --profile python
 ```
 
-The installer clones each other package that it needs into the same folder. It writes the starter
+On the first install, `install_stack.py` clones `agent_gest_git_skills`, `nossaifd` and each needed
+profile into the same folder (`~/.local/share/skill-packages` by default). It writes the starter
 `Justfile`, `AGENTS.md`, `CLAUDE.md`, the files under `.agents/`, and the manifest, such as
 `pyproject.toml`, when the folder has none.
 
@@ -122,7 +135,7 @@ The installer clones each other package that it needs into the same folder. It w
 `integration=verify`, it leaves out `integration`.
 
 ```text
-tools-check release-check fmt-check lint typecheck test integration coverage-check docstring-check docs-check prose-check diff-check
+tools-check release-check ci-gate fmt-check lint typecheck test integration coverage-check docstring-check docs-check prose-check diff-check
 ```
 
 A step that nothing gives logs a skip. So a new project with no code passes. A skip proves nothing

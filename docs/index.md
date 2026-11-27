@@ -29,9 +29,10 @@ So the log shows exactly what a recipe did. The commit gate reads this log to se
 command, have not changed since the last run, so a slow step runs only when it has to.
 
 Some recipes need an agent rather than a program, such as a code review or a check of the docs. Such a
-recipe is an agentic recipe. **jagt** writes the task for the agent as a packet, a block of text with a fixed
-structure. The agent answers in a packet of the same kind, and jagt checks that answer before the
-result counts.
+recipe is an agentic recipe, and it runs only on your machine and never in CI. By contrast, `just check`
+runs only deterministic programs, and its `prose-check` step runs the Python script `check.py`. **jagt**
+writes the task for an agentic recipe as a packet, a block of text with a fixed structure. The agent
+answers in a packet of the same kind, and jagt checks that answer before the result counts.
 
 **agent_gest_git_skills** holds the skills that an agent follows to develop in git, from a task to a
 reviewed commit and a pull request. It keeps each small task of the agent in **gest**, an issue tracker
