@@ -84,21 +84,22 @@ version of its manifest, or nothing:
 | `typescript::version` | `version` of `package.json` |
 | `rust::version` | the version of `Cargo.toml` |
 
-When a profile prints a version, the tag is that version with a `v` in front. The script fails when
-two profiles print different versions. It also fails when the version is below the last tag, or below
-the bump that the commits ask for. So when the manifest has a version, a pull request with a `feat`
-commit must also raise it.
+A branch does not raise the manifest version. If a profile prints a version at or above the requested
+bump, the tag is that version with a `v` in front. If the version is lower, `just release` writes the bump
+into the version and lock files after merge. It commits `chore(release): vX.Y.Z` and pushes the commit and
+tag together. The script fails when two profiles print different versions or when the version is below the
+last tag.
 
 ## Check before the merge
 
 `release-check` is the second step of `just check`. It runs the script with `--check` and prints the
-next tag. It needs no network. So a commit that needs a higher manifest version fails on your machine,
-before the merge. In a shallow checkout or with no tag yet, it says so and passes.
+next tag. It needs no network. A manifest version equal to the last tag passes. The check tests the
+manifest update in memory, so a file that `just release` cannot write fails before the merge. In a shallow
+checkout or with no tag yet, it says so and passes.
 
-`just check` runs before you write the commit message, so it cannot read the type of the commit. Since
-agent_gest_git_skills v0.3.5, the commit-msg hook runs `just release-check` again with the message. It
-stops a commit when its type, such as `feat:`, asks for a release, the manifest has a version, and that
-version is not raised.
+`just check` runs before you write the commit message, so it cannot read the type of the commit. The
+commit-msg hook runs `just release-check` again with the message. It stops a commit when its type, such as
+`feat:`, asks for a release that `just release` cannot write into the manifest.
 
 `just release --dry-run` prints the tag and changes nothing.
 

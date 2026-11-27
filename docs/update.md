@@ -19,7 +19,7 @@ branch, and commit it as a change of its own.
 | `just uninstall NAME` | Takes out a role, a tool or a profile, and keeps each file that you edited |
 
 `just uninstall docs` keeps the pages and the theme files, because they are yours. While a theme file
-stays, the installer keeps the line `docs/_extensions/** -whitespace` in `.gitattributes`, so
+stays, the installer keeps the line `_extensions/** -whitespace` in `docs/.gitattributes`, so
 `git diff --check` accepts the line ends of the theme. Delete the theme, and the next run takes out the
 line.
 

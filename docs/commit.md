@@ -7,6 +7,21 @@ agent_gest_git_skills that the Git hooks run. It does not run `just check` or th
 proof that they ran on the same tree, and it stops the commit when the proof is missing. At the
 commit-msg hook, it runs one check, `just release-check`, on the message of the commit.
 
+## Deterministic checks, agentic targets and CI
+
+The stack keeps deterministic checks, agentic targets and pull-request CI apart:
+
+- **`just check`** runs only deterministic programs and no AI agent. Every step is a normal tool, and
+  `prose-check` runs the Python script `check.py` of nossaifd, not an agent. `just check` runs once on
+  your machine before you commit, and `jlog pass` records that pass.
+- **Agentic targets** are the separate local recipes `just review`, `just test-review`, `just update-docs`
+  and `just prose`. They run only on your machine and never in CI, and the commit gate checks their
+  records before a commit by an agent.
+- **`just ci`** runs in the pre-push hook and on pull requests in CI. By default it runs only `ci-gate`,
+  which checks the `Commit-Gate:` trailer that the commit gate added to each commit. If you leave the list
+  `ci` of `.agents/stack.json` empty, tests do not run twice on a pull request. After the pull request
+  merges to `main`, a clean CI runner runs the full `just check`.
+
 ## The order of the work
 
 1. **Make the change**, and stage it with `git add`.
@@ -61,13 +76,16 @@ has no hooks, so run `just install` in each new clone. When `CI` is set, `tools-
 - The run log has a pass of `just check` for that tree.
 - For a commit by an agent, the records of the required targets form a chain that ends at that tree.
 
-The commit-msg hook then runs `just release-check` with the message of the commit. It stops a commit
-whose type asks for a release when the manifest has a version and that version is not raised. It skips
-this check for a merge or an amend of a merge, during a rebase, and when the Justfile has no recipe
-`release-check`. Then it adds the trailer `Commit-Gate: patch:<patch-id>`, or
-`Commit-Gate: tree:<tree>` for a merge. `git commit -n` skips the
-hooks, so a commit that went around the gate has no trailer.
-[The commit gates](https://rahuldave.com/agent_gest_git_skills/specs/commit-gates.html) tell each rule.
+The commit-msg hook then runs `just release-check` with the message of the commit. A branch keeps the
+manifest version of the last tag, and `just release` writes the bump after merge. The hook stops a commit
+if profiles disagree or the manifest version is below the last tag. It also stops a commit if
+`just release` cannot write the new version into the manifest. It skips this check for a merge, an amend
+of a merge, a rebase, or a Justfile with no recipe `release-check`.
+
+After `release-check` passes, the commit-msg hook adds the trailer `Commit-Gate: patch:<patch-id>`, or
+`Commit-Gate: tree:<tree>` for a merge. `git commit -n` skips the hooks, so a commit that went around the
+gate has no trailer. [The commit gates](https://rahuldave.com/agent_gest_git_skills/specs/commit-gates.html)
+tell each rule.
 
 ## What CI checks
 
