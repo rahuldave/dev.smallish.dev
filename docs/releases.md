@@ -56,7 +56,7 @@ of `--dir`. It writes the new binary next to the old one, then renames it over t
 A copy over a running binary fails on Linux, and macOS can stop a signed binary that changed in place.
 
 With no `--tag`, `install.sh` installs the latest release.
-[Start a fresh folder](fresh-folder.md#what-the-machine-needs) gives the install line of each tool.
+[Start a new project](fresh-folder.md#set-up-your-machine-once) gives the install line of each tool.
 
 ## How the number is chosen
 
