@@ -20,6 +20,8 @@ website:
         text: System map
       - href: fresh-folder.md
         text: Start
+      - href: existing-project.md
+        text: Existing
       - href: update.md
         text: Update
       - href: commit.md

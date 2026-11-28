@@ -38,7 +38,7 @@ On that day, these were the latest tags:
 
 ## A new machine
 
-Today you install each program by hand, as [Start a fresh folder](fresh-folder.md) lists. jlog, jagt,
+Today you install each program by hand, as [Start a new project](fresh-folder.md) lists. jlog, jagt,
 gest and cx have release binaries, so only the `rust` profile needs Rust. The CI of jnterfaces, of the profiles,
 of agent_gest_git_skills and of the starter workflows downloads the binaries of jlog and jagt that it
 needs, and builds neither tool.

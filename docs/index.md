@@ -2,47 +2,43 @@
 title: smallish dev
 ---
 
-The smallish dev tools set up a project so that a person and an AI agent work the same way. Every
-command of the project is a recipe of `just`, a command runner. Every recipe line goes into a run log.
-Before a commit, a Git hook reads that log, and for a commit by an agent the records of the reviews. It
-stops a commit that has no proof of its checks.
+smallish dev is a stack that sets up and checks repositories where people and AI agents work together.
+It gives every repository the same `just` commands and logs each command line that runs. Before a commit
+lands, a Git hook verifies that the staged files passed their checks and reviews.
 
-Each tool has its own repository and its own site. This site tells how the tools fit together, and it
-links to the site of each tool for the details.
+Each tool in the stack has its own repository and documentation site. This site explains how the tools
+fit together as one system and links to each tool for the details.
 
-## How the tools fit together
+## Parts of the stack
 
-Every project has the same common tasks, such as installing the software, running the tests, linting the
-code, building the docs and making a release. In a project set up by these tools, each task is a recipe of `just`, such as
-`just install` or `just check`. So a person and an agent type the same commands in every project, in any
-language. The tools depend on four programs of the machine, which are `just`, `git`, `gh`, the GitHub
-command-line program, and `uv`, which runs the Python tools.
+Most repositories repeat the same daily work, such as dependency installs, tests, docs and releases.
+Without a shared interface, each project has its own scripts, and an AI agent can claim that checks
+passed without proof. smallish dev solves both problems with shared recipes, a run log, local agent
+reviews and writing tools.
 
-**jnterfaces** gives a project its base recipes, the ones that every project has. A profile, such as
-jnprofile-python, jnprofile-typescript or jnprofile-rust, adds the recipes of one language. `just install` copies
-the recipes in, and `just install --update` brings them up to date.
+jnterfaces installs the command surface across languages. You pick a language profile
+(`jnprofile-python`, `jnprofile-typescript` or `jnprofile-rust`) and optional roles (`tasker`, `prose` or
+`docs`). `just install` copies the recipes and agent skills into the repository, and
+`just install --update` updates them to newer releases. Every project then uses the same commands, such
+as `just setup`, `just fmt`, `just lint`, `just test` and `just check`.
 
-**jlog** runs each line of a recipe and logs it, with the `just` command, the line and its exit code.
-So the log shows exactly what a recipe did. The commit gate reads this log to see that the checks ran and passed.
+jlog is the shell for every `just` recipe. It runs each line and writes the command, exit code and tree
+hash of the worktree to `.agents/log/just.jsonl`. `just check` runs only deterministic tools, with the
+Python script `check.py` for `prose-check`, and ends with `jlog pass`. Before a commit lands, the Git
+hook of agent_gest_git_skills checks that the staged tree matches that pass.
 
-**cx** helps `just` with files. It skips a recipe line when the files it reads and writes, and the
-command, have not changed since the last run, so a slow step runs only when it has to.
+Some checks need judgment rather than a linter, such as an adversarial code review or a prose revision.
+Those checks run through separate local agentic recipes (`just review`, `just test-review`,
+`just update-docs` and `just prose`) on your machine and never in CI. jagt formats each task as an
+`AGENT_TASK` packet for a fresh agent and checks the returned `AGENT_RESULT` before the commit gate
+accepts it. agent_gest_git_skills also gives the `g*` workflow skills, local tasks in gest and sync for
+GitHub issues through `gh`.
 
-Some recipes need an agent rather than a program, such as a code review or a check of the docs. Such a
-recipe is an agentic recipe, and it runs only on your machine and never in CI. By contrast, `just check`
-runs only deterministic programs, and its `prose-check` step runs the Python script `check.py`. **jagt**
-writes the task for an agentic recipe as a packet, a block of text with a fixed structure. The agent
-answers in a packet of the same kind, and jagt checks that answer before the result counts.
+nossaifd gives the plain-English writing guide, `check.py` and the `declaude` revision skill. smalldocs
+builds the documentation site for each tool and this site too. cx is optional and caches slow
+file-to-file recipe steps so that they run again only when their inputs change.
 
-**agent_gest_git_skills** holds the skills that an agent follows to develop in git, from a task to a
-reviewed commit and a pull request. It keeps each small task of the agent in **gest**, an issue tracker
-for agentic micro-tasks. The skills sync the top-level tasks with GitHub issues, through `gh`, so people
-see the work on GitHub.
-
-**nossaifd** is the writing guide of the docs, and its checker, `check.py`. **smalldocs** builds the docs
-site of each tool, and this site too.
-
-## Which tool calls which
+## Flow from install to commit
 
 ```{mermaid}
 flowchart LR
@@ -60,41 +56,43 @@ flowchart LR
     skills[g* skills] --> gest[gest: the tasks]
 ```
 
-The diagram reads from left to right:
+The diagram moves from setup on the left to a gated commit on the right:
 
-- **The installer** of jnterfaces writes the recipes and the files under `.agents/`. It copies them
-  from the packages, which are the profiles, the `g*` skills and nossaifd.
-- **just** runs each recipe, and **jlog** runs each line of it and logs the line.
-- **An agentic recipe**, such as `just review`, prints a task for a fresh agent. The agent returns a
-  result, and jagt checks the result before the record is saved.
-- **The commit gate** reads the run log, and for a commit by an agent the records. It does not run
-  `just check`. At the commit-msg hook, it runs one check, `just release-check`, on the message.
+1. `jnterfaces` writes the `Justfile`, `.agents/` recipes, skills and config from the package clones.
+2. `just` runs each recipe line through `jlog`, which logs the run and writes a `jlog pass` when
+   `just check` finishes clean.
+3. For agent commits, recipes such as `just review` hand a packet to a fresh agent. `jagt` checks the
+   reply before the hook saves a record.
+4. On `git commit`, the Git hooks check the `jlog` pass and any required review records without a second
+   `just check`. The `commit-msg` hook then runs `just release-check` and stamps the `Commit-Gate:`
+   trailer.
 
-[The system map](system-map.md) gives the terms and the files that hold each choice.
+[System map](system-map.md) lists the exact terms, package boundaries and project files.
 
-## What each tool does
+## Tools in the stack
 
 | Tool | What it does | Site |
 |---|---|---|
-| jnterfaces | The installer, `just install`, the roles, the profiles and the steps of `just check` | [rahuldave.com/jnterfaces](https://rahuldave.com/jnterfaces/) |
-| agent_gest_git_skills | The `g*` skills, the commit gates, the review targets and the release tags | [rahuldave.com/agent_gest_git_skills](https://rahuldave.com/agent_gest_git_skills/) |
-| jlog | The shell of each recipe, the run log, `jlog run` and the pass of `just check` | [rahuldave.com/jlog](https://rahuldave.com/jlog/) |
-| gest | The task tracker of the `g*` skills | [rahuldave.com/gest](https://rahuldave.com/gest/) |
-| jagt | The packets that hand a task to an agent and return its result | [rahuldave.com/jagt](https://rahuldave.com/jagt/) |
-| cx | Recipe lines that run again only when their files change | [rahuldave.com/cx](https://rahuldave.com/cx/) |
-| nossaifd | The writing guide and its checker, `check.py` | [rahuldave.com/nossaifd](https://rahuldave.com/nossaifd/) |
-| smalldocs | The docs generator of each site, this site too | [docs.smallish.dev](https://docs.smallish.dev/) |
-| jnprofile-python | The Python profile: ruff, ty and pytest, with uv | [rahuldave.com/jnprofile-python](https://rahuldave.com/jnprofile-python/) |
-| jnprofile-typescript | The TypeScript profile: Biome, tsc and the Node test runner, with Node through uv | [rahuldave.com/jnprofile-typescript](https://rahuldave.com/jnprofile-typescript/) |
-| jnprofile-rust | The Rust profile: rustfmt, clippy, cargo-llvm-cov and the doc checks | [rahuldave.com/jnprofile-rust](https://rahuldave.com/jnprofile-rust/) |
+| jnterfaces | Installer, `just install`, roles, profiles and the `just check` pipeline | [rahuldave.com/jnterfaces](https://rahuldave.com/jnterfaces/) |
+| agent_gest_git_skills | `tasker` role: `g*` skills, commit gate, agentic review targets and release tags | [rahuldave.com/agent_gest_git_skills](https://rahuldave.com/agent_gest_git_skills/) |
+| jlog | Recipe shell, run log, `jlog run` and the `jlog pass` proof | [rahuldave.com/jlog](https://rahuldave.com/jlog/) |
+| gest | Local task tracker for the `g*` workflow skills | [rahuldave.com/gest](https://rahuldave.com/gest/) |
+| jagt | `AGENT_TASK` and `AGENT_RESULT` packet renderer and validator | [rahuldave.com/jagt](https://rahuldave.com/jagt/) |
+| nossaifd | `prose` role: plain-English writing guide, `check.py` and the `declaude` skill | [rahuldave.com/nossaifd](https://rahuldave.com/nossaifd/) |
+| smalldocs | Static docs site builder used by the `docs` role and this site | [docs.smallish.dev](https://docs.smallish.dev/) |
+| cx | Optional incremental runner that skips unchanged file-to-file steps | [rahuldave.com/cx](https://rahuldave.com/cx/) |
+| jnprofile-python | Python profile: ruff, ty and pytest, managed through uv | [rahuldave.com/jnprofile-python](https://rahuldave.com/jnprofile-python/) |
+| jnprofile-typescript | TypeScript profile: Biome, tsc and the Node test runner, through uv | [rahuldave.com/jnprofile-typescript](https://rahuldave.com/jnprofile-typescript/) |
+| jnprofile-rust | Rust profile: rustfmt, clippy, cargo-llvm-cov and docstring checks | [rahuldave.com/jnprofile-rust](https://rahuldave.com/jnprofile-rust/) |
 
 ## The pages
 
-| Page | What it tells |
+| Page | What it covers |
 |---|---|
-| [System map](system-map.md) | The terms, the job of each package, and the files of a project |
-| [Start a fresh folder](fresh-folder.md) | The programs of the machine, the setup for each kind of project, and the first `just check` |
-| [Update a project](update.md) | `just install --update`, `--check`, the version floors and the starter files |
-| [A commit's path](commit.md) | The steps, the reviews, the pass of jlog, the gate and CI |
-| [Releases and versions](releases.md) | The tags that CI makes, the release binaries, `<profile>::version` and the floors |
-| [What works and what is proposed](status.md) | Each part of the stack, with its state today |
+| [System map](system-map.md) | Terms, package boundaries and the files in a project |
+| [Start a new project](fresh-folder.md) | One-time machine setup, choosing profiles and roles, and the first `just check` |
+| [Bring an existing project in](existing-project.md) | Adding jnterfaces to an existing repository, resolving recipe clashes and updating CI |
+| [Update a project](update.md) | `just install --update`, `--check`, version floors and starter files |
+| [A commit's path](commit.md) | Deterministic checks, agentic targets, `jlog pass`, commit gate and CI |
+| [Releases and versions](releases.md) | Automated release tags, release binaries, manifest versions and floors |
+| [What works and what is proposed](status.md) | Current release tags and the state of each part of the stack |
